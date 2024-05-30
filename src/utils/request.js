@@ -1,5 +1,7 @@
 import axios from "axios"
-import { getToken } from "./token"
+import { clearToken, getToken } from "./token"
+import { Navigate } from "react-router-dom"
+import router from "@/router"
 
 //根域名配置  超时时间 请求拦截器/响应拦截器
 const request = axios.create({
@@ -27,6 +29,13 @@ request.interceptors.request.use((config) => {
 request.interceptors.response.use((response) => {
   return response.data
 }, (error) => {
+  //返回状态码401 token失效
+  if (error.response.status === 401) {
+    clearToken()
+    router.navigate('/login')
+    window.location.reload()
+  }
+
   return Promise.reject(error)
 })
 
